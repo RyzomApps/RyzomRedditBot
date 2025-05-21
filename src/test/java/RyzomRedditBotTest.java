@@ -69,8 +69,6 @@ public class RyzomRedditBotTest {
         Path path = Path.of(TEST_POSTED_FILE);
 
         Files.writeString(path, "initial");
-        Set<String> set = new HashSet<>();
-        set.add("abc");
         savePostedNews(TEST_POSTED_FILE, "xyz");
         String content = Files.readString(path);
         assertTrue(content.contains("initial"));
