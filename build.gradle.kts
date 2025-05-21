@@ -4,7 +4,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "de.invinoveritas"
+group = "de.InVinoVeritas"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -15,7 +15,6 @@ repositories {
 }
 
 dependencies {
-    // BOM for JUnit 5.12.2
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.platform:junit-platform-engine:1.12.2")
@@ -26,30 +25,15 @@ dependencies {
 }
 
 java {
-    // Set the Java version for the project
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
-    }
-}
-
-tasks.test {
-    useJUnitPlatform()
-    // Use Java 21 for testing
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(21))
-    })
-    // Show detailed test output
-    testLogging {
-        events("PASSED", "FAILED", "SKIPPED")
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-        showStandardStreams = true
     }
 }
 
 tasks.jar {
     manifest {
         attributes(
-            "Main-Class" to "de.invinoveritas.RyzomRedditBot"
+            "Main-Class" to "de.InVinoVeritas.RyzomRedditBot"
         )
     }
 }
@@ -69,12 +53,20 @@ tasks.register<JavaExec>("debugJar") {
     jvmArgs = listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005")
 }
 
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("PASSED", "FAILED", "SKIPPED")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"])
             artifact(tasks.shadowJar.get())
-            groupId = "de.invinoveritas"
+            groupId = "de.InVinoVeritas"
             artifactId = rootProject.name
             version = project.version.toString()
         }

@@ -1,4 +1,4 @@
-package de.invinoveritas;
+package de.InVinoVeritas;
 
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.OkHttpNetworkAdapter;

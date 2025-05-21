@@ -1,4 +1,4 @@
-package de.invinoveritas;
+package de.InVinoVeritas;
 
 import java.io.FileInputStream;
 import java.io.IOException;

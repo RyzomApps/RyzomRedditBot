@@ -1,4 +1,4 @@
-package de.invinoveritas;
+package de.InVinoVeritas;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
