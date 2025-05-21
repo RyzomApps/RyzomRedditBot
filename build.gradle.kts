@@ -15,19 +15,35 @@ repositories {
 }
 
 dependencies {
+    // BOM for JUnit 5.12.2
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.platform:junit-platform-engine:1.12.2")
+    testImplementation("org.junit.platform:junit-platform-launcher:1.12.2")
+
     implementation("net.dean.jraw:JRAW:1.1.0")
     implementation("org.jsoup:jsoup:1.20.1")
 }
 
-tasks.test {
-    useJUnitPlatform()
+java {
+    // Set the Java version for the project
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
-tasks.shadowJar {
-    dependsOn(tasks.jar)
-    archiveFileName.set("${rootProject.name}-${version}.jar")
+tasks.test {
+    useJUnitPlatform()
+    // Use Java 21 for testing
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    })
+    // Show detailed test output
+    testLogging {
+        events("PASSED", "FAILED", "SKIPPED")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
+    }
 }
 
 tasks.jar {
@@ -38,13 +54,17 @@ tasks.jar {
     }
 }
 
+tasks.shadowJar {
+    dependsOn(tasks.jar)
+    archiveFileName.set("${rootProject.name}-${version}.jar")
+}
+
 tasks.register<JavaExec>("debugJar") {
     dependsOn(tasks.shadowJar)
     val jarFile = tasks.shadowJar.get().archiveFile.get().asFile
-    //workingDir = jarFile.parentFile
     group = "application"
     description = "Run the JAR in debug mode"
-    mainClass = "-jar"
+    mainClass.set("-jar")
     args = listOf(jarFile.absolutePath)
     jvmArgs = listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005")
 }
