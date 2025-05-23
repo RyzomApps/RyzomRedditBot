@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "de.InVinoVeritas"
-version = findProperty("version") as? String ?: "1.0"
+version = findProperty("version") as? String ?: "1.0.0"
 val jarFileName = "${project.name}-${project.version}.jar"
 
 repositories {
@@ -31,27 +31,13 @@ java {
     }
 }
 
-tasks.jar {
-    manifest {
-        attributes(
-            "Main-Class" to "de.InVinoVeritas.RyzomRedditBot"
-        )
-    }
-}
-
 tasks.shadowJar {
-    dependsOn(tasks.jar)
+    dependsOn(tasks.build)
     archiveFileName.set(jarFileName)
     manifest {
         attributes(
             "Main-Class" to "de.InVinoVeritas.RyzomRedditBot"
         )
-    }
-}
-
-tasks.register("printJarName") {
-    doLast {
-        println("JAR_FILE_NAME=$jarFileName")
     }
 }
 

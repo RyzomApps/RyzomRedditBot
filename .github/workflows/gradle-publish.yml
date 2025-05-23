@@ -7,64 +7,34 @@ on:
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
+  ci:
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
+
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 'Validate gradlew'
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: 'Setup Java'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          server-id: github
-          settings-path: ${{ github.workspace }}
+          check-latest: true
+          cache: 'gradle'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
+      - name: 'Build plugin'
+        run: ./gradlew --console plain --no-daemon --full-stacktrace shadowJar
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Set version from tag
-        run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-        id: set_version
-
-      - name: Build with Gradle
-        run: ./gradlew shadowJar -Pversion=${{ steps.set_version.outputs.version }}
-
-      - name: Get JAR filename
-        id: jar_name
-        run: |
-          output=$(./gradlew printJarName)
-          echo "$output"
-          jarFileName=$(echo "$output" | grep JAR_FILE_NAME | cut -d'=' -f2)
-          echo "JAR_FILE_NAME=$jarFileName" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+      - name: 'Release plugin'
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload JAR to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/${{ steps.jarname.outputs.JAR_FILE_NAME }}
-          asset_name: ${{ steps.jarname.outputs.JAR_FILE_NAME }}
-          asset_content_type: application/java-archive
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          body: 'automated release at commit ${{ github.sha }}'
+          files: 'build/dist/*.jar'
