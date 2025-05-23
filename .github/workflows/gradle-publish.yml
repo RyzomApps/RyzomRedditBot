@@ -30,7 +30,9 @@ jobs:
           cache: 'gradle'
 
       - name: 'Build plugin'
-        run: ./gradlew --console plain --no-daemon --full-stacktrace shadowJar
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --console plain --no-daemon --full-stacktrace shadowJar
 
       - name: 'Release plugin'
         uses: softprops/action-gh-release@v2
