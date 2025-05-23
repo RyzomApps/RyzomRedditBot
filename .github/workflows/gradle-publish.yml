@@ -36,6 +36,14 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew shadowJar -Pversion=${{ steps.set_version.outputs.version }}
 
+      - name: Get JAR filename
+        id: jar_name
+        run: |
+          output=$(./gradlew printJarName)
+          echo "$output"
+          jarFileName=$(echo "$output" | grep JAR_FILE_NAME | cut -d'=' -f2)
+          echo "JAR_FILE_NAME=$jarFileName" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -51,8 +59,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/${{ rootProject.name }}-${{ version }}.jar
-          asset_name: ${{ rootProject.name }}-${{ version }}.jar
+          asset_path: ./build/libs/${{ steps.jarname.outputs.JAR_FILE_NAME }}
+          asset_name: ${{ steps.jarname.outputs.JAR_FILE_NAME }}
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

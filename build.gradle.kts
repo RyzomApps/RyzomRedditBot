@@ -6,6 +6,7 @@ plugins {
 
 group = "de.InVinoVeritas"
 version = findProperty("version") as? String ?: "1.0"
+val jarFileName = "${project.name}-${project.version}.jar"
 
 repositories {
     mavenCentral()
@@ -40,11 +41,17 @@ tasks.jar {
 
 tasks.shadowJar {
     dependsOn(tasks.jar)
-    archiveFileName.set("${rootProject.name}-${version}.jar")
+    archiveFileName.set(jarFileName)
     manifest {
         attributes(
             "Main-Class" to "de.InVinoVeritas.RyzomRedditBot"
         )
+    }
+}
+
+tasks.register("printJarName") {
+    doLast {
+        println("JAR_FILE_NAME=$jarFileName")
     }
 }
 
@@ -64,26 +71,5 @@ tasks.test {
         events("PASSED", "FAILED", "SKIPPED")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         showStandardStreams = true
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            artifact(tasks.shadowJar.get())
-            groupId = "de.InVinoVeritas"
-            artifactId = rootProject.name
-            version = project.version.toString()
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/RyzomApps/RyzomRedditBot")
-            credentials {
-                username = System.getenv("USERNAME")
-                password = System.getenv("TOKEN")
-            }
-        }
     }
 }
