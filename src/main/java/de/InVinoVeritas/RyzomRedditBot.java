@@ -66,8 +66,11 @@ public class RyzomRedditBot {
         List<NewsItem> newsItems = fetchNewsFromHtml(doc);
         logger.info("Found " + newsItems.size() + " news entries.");
 
+        // Oldest news items should be posted first
+        Collections.reverse(newsItems);
+
         // Iterate through each news item
-        for (NewsItem news : newsItems.reversed()) {
+        for (NewsItem news : newsItems) {
             // Check if this news has already been posted
             if (!postedNewsIds.contains(news.hashCode())) {
                 try {

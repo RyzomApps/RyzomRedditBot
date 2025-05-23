@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "de.InVinoVeritas"
-version = "1.0-SNAPSHOT"
+version = findProperty("version") as? String ?: "1.0"
 
 repositories {
     mavenCentral()
@@ -26,7 +26,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -41,6 +41,11 @@ tasks.jar {
 tasks.shadowJar {
     dependsOn(tasks.jar)
     archiveFileName.set("${rootProject.name}-${version}.jar")
+    manifest {
+        attributes(
+            "Main-Class" to "de.InVinoVeritas.RyzomRedditBot"
+        )
+    }
 }
 
 tasks.register<JavaExec>("debugJar") {
