@@ -18,7 +18,7 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.junit.platform:junit-platform-engine:1.12.2")
+    testImplementation("org.junit.platform:junit-platform-engine:1.13.1")
     testImplementation("org.junit.platform:junit-platform-launcher:1.12.2")
 
     implementation("net.dean.jraw:JRAW:1.1.0")
