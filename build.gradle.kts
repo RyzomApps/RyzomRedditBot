@@ -22,7 +22,7 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-launcher:1.12.2")
 
     implementation("net.dean.jraw:JRAW:1.1.0")
-    implementation("org.jsoup:jsoup:1.20.1")
+    implementation("org.jsoup:jsoup:1.21.1")
 }
 
 java {
